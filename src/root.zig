@@ -37,6 +37,7 @@ pub const BloomFilter = struct {
     }
 
     pub fn insert(self: *Self, item: []const u8) !void {
+        if (self.item_count >= self.max_items) return error.FilterIsFull;
         for (0..self.num_hash_fn) |i| {
             const hashed = self.hash_(item, @truncate(i));
             self.bitset.set(hashed);
