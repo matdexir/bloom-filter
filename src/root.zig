@@ -28,7 +28,15 @@ pub const BloomFilter = struct {
 
         const bitset = try std.bit_set.DynamicBitSet.initEmpty(allocator, idealBitsetWidth);
 
-        return BloomFilter{ .allocator = allocator, .fp_rate = fp_rate, .bitset = bitset, .bitset_width = idealBitsetWidth, .num_hash_fn = @truncate(hashFnCount), .item_count = 0, .max_items = max_items };
+        return BloomFilter{
+            .allocator = allocator,
+            .fp_rate = fp_rate,
+            .bitset = bitset,
+            .bitset_width = idealBitsetWidth,
+            .num_hash_fn = @truncate(hashFnCount),
+            .item_count = 0,
+            .max_items = max_items,
+        };
     }
 
     pub fn deinit(self: *Self) void {
