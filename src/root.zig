@@ -64,6 +64,11 @@ pub const BloomFilter = struct {
         return true;
     }
 
+    pub fn reset(self: *Self) void {
+        self.bitset.setRangeValue(.{ .start = 0, .end = self.bitset.capacity() }, false);
+        self.item_count = 0;
+    }
+
     fn hash_(self: *Self, item: []const u8, seed: u32) u64 {
         const hash = std.hash.Murmur3_32.hashWithSeed(item, seed);
         return hash % self.bitset_width; // NOTE: I'm not sure if this is ideal
@@ -166,6 +171,17 @@ test "calculateBitWidth: basic check" {
     // n=100, f=0.1 => m ≈ 479 bits
     try testing.expect(calculateBitWidth(100, 0.1) >= 470);
     try testing.expect(calculateBitWidth(100, 0.1) <= 485);
+}
+
+test "testBitSetClear: basic check" {
+    var bf = try BloomFilter.init(testing.allocator, 0.0001, 100);
+    defer bf.deinit();
+
+    const item = "single_item";
+    try bf.insert(item);
+
+    bf.reset();
+    try testing.expect(!bf.contains(item));
 }
 
 test "calculateHashFnNum: basic check" {
